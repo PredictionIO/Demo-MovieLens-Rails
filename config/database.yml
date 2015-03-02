@@ -1,0 +1,34 @@
+postgres: &postgres
+  adapter:    postgresql
+  username:   postgres # Your PostgreSQL Username
+  password:   # Your Password
+  encoding:   utf8
+  host:       localhost
+  database:   movielens
+
+sqlite: &sqlite
+  adapter:    sqlite3
+  database:   db/movielens.sqlite3
+  pool:       5
+  timeout:    5000
+
+mysql: &mysql
+  adapter:    mysql2
+  encoding:   utf8
+  username:   # Your MySQL Username
+  password:   # Your Password
+  pool:       5
+  host:       localhost
+  database:   movielens
+
+development:
+  # Pick your database adapter!
+  <<: *postgres # Uncomment this line for Postgres.
+  # <<: *sqlite # Uncomment this for SQLite.
+  # <<: *mysql # Uncomment this line for MySQL.
+
+production:
+  # Pick your database adapter!
+  <<: *postgres # Uncomment this line for Postgres.
+  # <<: *sqlite # Uncomment this for SQLite.
+  # <<: *mysql # Uncomment this line for MySQL.

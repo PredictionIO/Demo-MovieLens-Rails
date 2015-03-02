@@ -1,0 +1,7 @@
+# Tests
+/features
+/spec
+/test
+
+# Dotenv
+.env
