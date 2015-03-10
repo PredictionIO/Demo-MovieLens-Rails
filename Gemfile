@@ -23,10 +23,7 @@ gem 'kaminari'
 gem 'bootstrap-kaminari-views'
 gem 'imdb', '~> 0.8'
 
-# All the databases (you can comment out the ones you don't need).
 gem 'pg'
-gem 'mysql2'
-gem 'sqlite3'
 
 gem 'predictionio'
 gem 'smarter_csv'
