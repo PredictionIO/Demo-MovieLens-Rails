@@ -1,3 +1,22 @@
 @import 'normalize-rails';
 @import 'bootstrap-sprockets';
 @import 'bootstrap';
+
+body {
+  padding-top: 50px;
+  padding-bottom: 20px;
+}
+
+
+.inline-block {
+  display: inline-block;
+}
+
+.movie-single {
+  margin-top: 50px;
+}
+
+.movie-thumbnail {
+
+  padding: 20px;
+}

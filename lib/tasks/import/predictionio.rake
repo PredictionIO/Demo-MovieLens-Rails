@@ -1,86 +1,62 @@
-# This script will takes about 4 minutes to run!
-
 require 'rainbow/ext/string'
 require 'csv'
-USER_LIST = Rails.root.join('data', 'user_list.csv')
+include ActionView::Helpers::NumberHelper
 THREADS = 50
 namespace :import do
   desc 'Send the data to PredictionIO'
   task predictionio: :environment do
-    line_count = CSV.read(USER_LIST).length
-
-    puts 'Starting import...'.color(:blue)
+    start_time = Time.current
+    puts "Started at: #{start_time}".color(:blue)
 
     client = PredictionIO::EventClient.new(ENV['PIO_ACCESS_KEY'], ENV['PIO_EVENT_SERVER_URL'], THREADS)
 
-    # Search CSV file for episode and user IDs.
-    user_ids = []
-    episode_ids = []
-    CSV.foreach(USER_LIST, headers: true) do |row|
-      user_id = row[0] # userId
-      episode_id = row[1] # episodeId
-      puts "Reading line #{$INPUT_LINE_NUMBER} of #{line_count}."
-      user_ids << user_id
-      episode_ids << episode_id
-    end
+    puts 'Starting import...'.color(:blue)
 
-    # Calculate unique values.
-    user_ids.uniq!
-    user_count = user_ids.count
-    episode_ids.uniq!
-    episode_count = episode_ids.count
-
-    puts "Found #{user_count} unique user IDs!".color(:blue)
-    puts "Found #{episode_count} unique episode IDs!".color(:blue)
-
-    puts 'Starting users...'.color(:blue)
-
-    user_ids.each_with_index do |id, i|
-      # Send unique user IDs to PredictionIO.
-      client.aset_user(id)
-      puts "Sent user ID #{id} to PredictionIO. Action #{i + 1} of #{user_count}"
-    end
-
-    puts 'Done with users!'.color(:green)
-
-    puts 'Starting episodes...'.color(:blue)
-
-    episode_ids.each_with_index do |id, i|
-      # Load episode from database - we will need this to include the categories!
-      episode = Episode.where(episode_id: id).take
-
-      if episode
-        # Send unique episode IDs to PredictionIO.
-        client.create_event(
-          '$set',
-          'item',
-          id,
-          properties: { categories: episode.categories }
-        )
-        puts "Sent episode ID #{id} to PredictionIO. Action #{i + 1} of #{episode_count}"
-      else
-        puts "Episode ID #{id} not found in database! Skipping!".color(:red)
-      end
-    end
-
-    puts 'Done with episodes!'.color(:green)
-
-    puts 'Starting likes...'.color(:blue)
-    CSV.foreach(USER_LIST, headers: true) do |row|
-      user_id = row[0]
-      episode_id = row[1]
-      # Send like to PredictionIO.
+    puts 'Starting user import...'.color(:blue)
+    unique_users = Rating.uniq.pluck(:movielens_user_id)
+    user_count = unique_users.count
+    unique_users.each_with_index do |user_id, index|
       client.acreate_event(
-        'like',
+        '$set',
         'user',
-        user_id,
-        { 'targetEntityType' => 'item', 'targetEntityId' => episode_id }
+        user_id
       )
-      puts "Sent user ID #{user_id} liked episode ID #{episode_id} to PredictionIO. Action #{$INPUT_LINE_NUMBER} of #{line_count}."
+      puts "Sent user ID #{user_id} to PredictionIO. Action #{number_with_delimiter index + 1} of #{number_with_delimiter user_count}"
     end
 
-    puts 'Done with likes!'.color(:green)
 
-    puts 'All Done!'.color(:green)
+    puts 'Starting movie import...'.color(:blue)
+    movie_count = Movie.all.count
+    Movie.find_each.with_index do |movie, index|
+      client.acreate_event(
+        '$set',
+        'item',
+        movie.movielens_id,
+        { 'properties' => { 'categories' => movie.genres } }
+      )
+      puts "Sent movie ID #{movie.id} to PredictionIO. Action #{number_with_delimiter index + 1} of #{number_with_delimiter movie_count}"
+    end
+
+puts 'Starting rating import...'.color(:blue)
+rating_count = Rating.all.count
+Rating.find_each.with_index do |rating, index|
+  client.acreate_event(
+    'rate',
+    'user',
+    rating.movielens_user_id, {
+      'targetEntityType' => 'item',
+      'targetEntityId' => rating.movielens_movie_id,
+      'properties' => { 'rating' => rating.rating }
+    }
+  )
+  puts "Sent rating ID #{rating.id} to PredictionIO. Action #{number_with_delimiter index + 1} of #{number_with_delimiter rating_count}"
+end
+
+    puts 'Done!'.color(:green)
+
+    finish_time = Time.current
+    total_time = finish_time - start_time
+    puts "Finished at: #{finish_time}".color(:blue)
+    puts "Total #{(total_time / 60).round(4)} minutes!".bright
   end
 end

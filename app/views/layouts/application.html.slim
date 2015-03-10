@@ -8,13 +8,11 @@ html
     = render 'shared/head/javascripts'
     = render 'shared/head/analytics'
   body
-    #global
-      #top
-        = render 'shared/header'
-        = yield :top
+    = render 'shared/header'
+    = yield
 
-      = render 'shared/flash'
-      #main role="main"
-        = yield
-      = render 'shared/footer'
-      = render 'shared/copyright'
+    = render 'shared/flash'
+    #main role="main"
+
+    = render 'shared/footer'
+    = render 'shared/copyright'

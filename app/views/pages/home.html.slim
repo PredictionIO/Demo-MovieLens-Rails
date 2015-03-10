@@ -1,0 +1,19 @@
+- page_title 'MovieLens Demo'
+
+.jumbotron
+  .container
+    h1 = link_to 'PredictionIO', 'http://prediction.io'
+    p MovieLens Rails Demo
+.container
+  - @top_movies.in_groups_of(3) do |group|
+    .row
+      - group.each do |movie|
+        - if movie
+          .movie-thumbnail.col-md-4
+            .image
+              = link_to image_tag(movie.poster_url, alt: movie.title, width: 250), movie
+            .title
+              h4 = link_to movie.title, movie
+
+            = render 'movies/details', movie: movie
+  = paginate @top_movies, theme: 'twitter-bootstrap-3'

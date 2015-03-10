@@ -1,3 +1,8 @@
-nav#nav-header
-  ul
-    li = link_to 'Prediction.IO', 'http://prediction.io/'
+nav.navbar.navbar-inverse.navbar-fixed-top
+  .container
+    .navbar-header
+      = link_to 'PredictionIO', 'http://prediction.io/', class: 'navbar-brand'
+    .collapse.navbar-collapse
+      ul.nav.navbar-nav
+        li = link_to '<span class="glyphicon glyphicon-home"></span>'.html_safe, root_path
+        li = link_to 'GitHub Code', 'https://github.com/PredictionIO/Demo-MovieLens-Rails'
