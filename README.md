@@ -7,7 +7,7 @@ Built with: [PredictionIO](http://prediction.io).
 
 ## Fast Import
 
-PostgreSQL dump: download.prediction.io/demos/movielens-rails/movielens-demo.dump
+PostgreSQL dump: http://download.prediction.io/demos/movielens-rails/movielens-demo.dump
 
 ## Slow Import
 
