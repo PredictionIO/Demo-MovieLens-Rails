@@ -1,0 +1,8 @@
+.details
+  p
+    b> MovieLens:
+    = "#{number_with_precision(movie.cached_average_rating * 2, precision: 1)} &ndash; #{number_with_delimiter movie.cached_rating_count} Users".html_safe
+  p
+    b> IMDb:
+    = link_to link_to "#{movie.imdb_rating}", movie.imdb_url
+    = " &ndash; #{number_with_delimiter movie.imdb_votes} Users".html_safe

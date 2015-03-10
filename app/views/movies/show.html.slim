@@ -1,0 +1,24 @@
+- page_title @movie.title
+
+.container
+  .movie-single
+    .row
+      .col-md-4
+        = image_tag @movie.poster_url, alt: @movie.title, width: 250
+      .col-md-8
+        h2 = @movie.title
+        h4
+          = @movie.genres.join(', ')
+        - if @movie.imdb_tagline
+          p = @movie.imdb_tagline.gsub('»', '').strip
+
+        = render 'movies/details', movie: @movie
+  .other-recomendations
+    h3 People who liked this also liked...
+    .row
+      - @recomendations.each do |movie|
+        movie-small.col-md-2
+          .image
+            = link_to image_tag(movie.poster_url, alt: movie.title, width: 100), movie
+          .title
+            h5 = link_to movie.title, movie

@@ -4,4 +4,20 @@
 
 Built with: [PredictionIO](http://prediction.io).
 
-Download [MoiveLens](http://grouplens.org/datasets/movielens/) data and place the unzipped files into the `data` directory.
+
+## Fast Import
+
+PostgreSQL dump: download.prediction.io/demos/movielens-rails/movielens-demo.dump
+
+## Slow Import
+
+You can download the [MoiveLens](http://grouplens.org/datasets/movielens/) data and place the unzipped files into the `data` directory. After that you can run:
+
+```
+$ rake import:movies
+$ rake import:ratings
+$ rake import:imdb_search
+$ rake import:imdb_fields
+```
+
+The entire import processes takes about 24 hours. There is also some manual cleanup to the PostgreSQL data so I **highly recomend** using the PosgreSQL dump instead. Rake tasks are mostly just for documentation.
